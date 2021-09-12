@@ -1,0 +1,176 @@
+---
+title: "Assessment 2"
+author: "Melody GENG s4660143"
+date: "12/09/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Part 1
+
+## *Melody GENG*
+
+##**s4660143**
+
+#-----------------------------
+
+# Assignment 2
+
+#-----------------------------
+
+![](/Users/gengjiaxian/Desktop.jpg)
+
+### Part 2
+
+```{r}
+install.packages("tidyverse")
+install.packages("janitor")
+install.packages("skimr")
+install.packages("dplyr")
+
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(dplyr)
+```
+
+### 1
+```{r}
+Meals <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-20/thanksgiving_meals.csv")
+```
+
+```{r}
+data%>%head (10)
+
+```
+### 2
+```{r}
+Meals %>%
+  mutate(family_income-fct_reorder(family_income, parse_number(family_income)))
+```
+### 3
+```{r}
+summary(Meals)
+skim(Meals)
+```
+### 4
+```{r}
+thanksgiving%>%
+count(celebrate,sort = TRUE) %>%
+  kable()
+```
+### 5
+```{r}
+Meals %>%
+  count(main_dish, main_prep)
+
+```
+### 6
+```{r}
+Meals %>%
+  count(main_dish, main_prep, sort = TRUE) %>%
+  ggplot(aes(main_dish, n, fill = main_prep)) +
+  geom_col()+
+  facet_wrap(main_prep- )+
+  coord_flip() +
+  labs(x = "Type of Main Dish", y = "Number of item", title = "How would you have your dish", caption = "Image 1: Graph") +
+  theme_linedraw()
+```
+### 7
+```{r}
+Meals %>%
+  count(cranberry) %>%
+  filter(cranberry == "Canned" | cranberry == "Homemade")
+```
+
+```{r}
+Meals %>%
+count(gravy)%>%
+  filter(gravy == "Yes")
+```
+### 8 and 9
+```{r}
+Meals %>%
+count(celebrate, family_income) %>%
+  filter(celebrate == "Yes" ) %>%
+  group_by(family_income) %>%
+  ggplot(aes(family_income, n, fill = celebrate)) +
+  geom_col()+
+  coord_flip()+
+  labs(x = "Income Range", y="Number of people", title = "Who want to celebrate the Thanksgiving", caption = "Image 2: Graph") +
+  theme_test()
+```
+### 10
+```{r}
+Most_common_pie <- Meals %>%
+  gather("famous", "famouspie", starts_with("pie"))%>%
+  filter(!is.na(famouspie)) %>%
+  count(famouspie = fct_lump(famouspie, 1), sort = TRUE)%>%
+  mutate(famouspie = fct_reorder(famouspie, n))
+```
+
+```{r}
+Most_common_side <- Meals %>%
+  gather("famous", "famousside", starts_with("side"))%>%
+  filter(!is.na(famousside)) %>%
+  count(famousside = fct_lump(famousside, 1), sort = TRUE)%>%
+  mutate(famousside = fct_reorder(famousside, n))
+```
+
+```{r}
+Most_common_dessert <- Meals %>%
+  gather("famous", "famousdessert", starts_with("dessert"))%>%
+  filter(!is.na(famousdessert)) %>%
+  count(famousdessert = fct_lump(famousdessert, 1), sort = TRUE)%>%
+  mutate(famousdessert = fct_reorder(famousdessert, n))
+```
+
+```{r}
+thanksgiving_meals <-read.csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-20/thanksgiving_meals.csv')
+
+pie <- thanksgiving_meals %>%
+  select(starts_with("pie")) %>%
+  gather(type, value) %>%
+  count(type, value, sore = TRUE) %>%
+  na.omit(value) %>%
+  filter(value = "None") %>%
+  filter(value = "other(please specify)")
+
+new_combined <- rbind(pie, side, dessert)
+```
+
+### 11
+```{r}
+finaldt <- rbind(dessert_comp_dt, pie_comp_dt, sides_comp_dt)
+
+finaldt %>% group_by(category) %>% mutate(mostcommons = fct_reorder(value.name,  n)) %>% ungroup() %>%
+  ggplot(aes(mostcommons, n, fill = category)) +
+  facet_wrap(category ~. ) +
+  theme(legend.position = "none") +
+  coord_flip() +
+  geom_col() +
+  geome_text(aes(label = n), vjust = 0.1, size = 3, colour = "black")+
+  labs(x="Name of the foods", y="Frequency of those foods are considered in the thanksgiven eve", title = "Distribution of the most commons dessert/pie/sides", caption = "Daraviz: Col Graph")
+```
+### 12
+```{r}
+meal_famincome%>%
+  filter(celebrate == "Yes")%>%
+  select(family_income, main_dish)%>%
+  count(family_income, main_dish)%>%
+  kable()
+```
+### 13
+```{r}
+Thanksgiving Meals %>% filter(main_dish != "None", main_dish != "Other (please specify") %>% count (main_dish, family_income) %>%
+  ggplot(aes(main_dish, n, color="red"))+
+  geom_col()+
+  facet_wrap(family_income~.)+
+  coord_flip()+
+  geom_text(aes(lable=round(n, digits = 2)), vjust= -0.25, size=3, colour="blue")+
+  labs(x="Dishes Type", y="Frenquency of those dishes are prepared", title = "The most common way some Thanksgiving dishes are prepared", caption = "Graph type:Point")
+```
+
+
